@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "282469591547",
+    "project_id": "fir-coin-7d183",
+    "storage_bucket": "fir-coin-7d183.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282469591547:android:99be44e8c87873f3f7c35e",
+        "android_client_info": {
+          "package_name": "com.jwngma.democoin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282469591547-k6jk106jshibtgtcuuung2oamfp9v7fl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jwngma.democoin",
+            "certificate_hash": "71c445d3e62f8ede424ad7025eb1ca474bbed162"
+          }
+        },
+        {
+          "client_id": "282469591547-7cfn0785qhf6a67o1m975dgl86jq02l5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1e94IggWJZCsB0OUdlUxQql7OgJoM-vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282469591547-7cfn0785qhf6a67o1m975dgl86jq02l5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
