@@ -45,10 +45,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const PLAY_STORE_URL = Constants.app_link;
-  final Firestore _db = Firestore.instance;
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  //final FirebaseMessaging _fcm = FirebaseMessaging();
   FirestoreServices firestoreServices = FirestoreServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
 
   String email = '';
 
@@ -85,8 +84,7 @@ class _HomePageState extends State<HomePage> {
       print(e);
     }
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-    UnityAdsServices.init();
-    _fcm.configure(
+/*    _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
 
@@ -107,13 +105,11 @@ class _HomePageState extends State<HomePage> {
         print("onResume: $message");
         _navigateToItemDetail(message);
       },
-    );
+    );*/
     super.initState();
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
+
 
 /*  getEmailAddress() async {
     email = await firestoreServices.getEmail();
@@ -350,7 +346,6 @@ class _HomePageState extends State<HomePage> {
                             title: Text("Home"),
                             leading: Icon(Icons.home),
                             onTap: () {
-                              showInterstitialAds();
                               Navigator.of(context).pop();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
@@ -381,7 +376,6 @@ class _HomePageState extends State<HomePage> {
                             title: Text("Redeem"),
                             leading: Icon(Icons.account_balance_wallet),
                             onTap: () {
-                              showInterstitialAds();
                               Navigator.of(context).pop();
 
                               Navigator.push(context,
@@ -414,7 +408,6 @@ class _HomePageState extends State<HomePage> {
                             leading: Icon(Icons.help),
                             onTap: () {
                               Navigator.of(context).pop();
-                              showInterstitialAds();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return HelpPage();
@@ -451,18 +444,17 @@ class _HomePageState extends State<HomePage> {
                             height: 1,
                             color: Colors.white,
                           ),
-                          ListTile(
+       /*                   ListTile(
                             title: Text("Share App"),
                             leading: Icon(Icons.share),
                             onTap: () {
                               Navigator.of(context).pop();
-                              showInterstitialAds();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                     return ReferralPage();
                                   }));
                             },
-                          ),
+                          ),*/
                           Divider(
                             height: 1,
                             color: Colors.white,

@@ -19,17 +19,12 @@ class _NotificationPageState extends State<NotificationPage> {
   Stream stream;
   FirestoreServices fireStoreServices = FirestoreServices();
   bool showLoading = true;
-  UnityAdsServices unityAdsServices = UnityAdsServices();
 
 
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
     fireStoreServices.getNotifications().then((val) {
       setState(() {
         stream = val;
@@ -54,7 +49,6 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

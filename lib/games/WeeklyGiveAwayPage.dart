@@ -26,23 +26,17 @@ class WeeklyGiveAwayPage extends StatefulWidget {
 
 class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
   var firestoreServices = FirestoreServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
+
   var today = "";
 
   @override
   void initState() {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-    UnityAdsServices.init();
+
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
 
-  showRewardAds() {
-    unityAdsServices.showRewardAds();
-  }
   bool btnenabled = false;
   @override
   Widget build(BuildContext context) {
@@ -228,7 +222,7 @@ class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
                                   child: btnenabled
                                       ? ElevatedButton(
                                           onPressed: () async {
-                                            showRewardAds();
+
                                             ProgressDialog pr= ProgressDialog(context, isDismissible: true);
                                             pr.show();
                                             Timer(Duration(seconds: 5), () {
@@ -264,13 +258,7 @@ class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
                             SizedBox(
                               height: 10,
                             ),
-                            Container(
-                              height: 60,
-                              child: Align(
-                                alignment: Alignment(0, 1.0),
-                                child: unityAdsServices.BannerAd(),
-                              ),
-                            ),
+
                           ],
                         ),
                       ),

@@ -20,16 +20,13 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  UnityAdsServices unityAdsServices = UnityAdsServices();
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
+
 
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
+
     super.initState();
   }
 
@@ -38,7 +35,7 @@ class _AccountScreenState extends State<AccountScreen> {
     var userData = Provider.of<Users>(context);
     return WillPopScope(
       onWillPop: () {
-        showInterstitialAds();
+
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

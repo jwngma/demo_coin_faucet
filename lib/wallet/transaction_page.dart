@@ -110,7 +110,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                           child: Text("${index}"),
                                         ),
                                         title: AutoSizeText(
-                                          "${_listEvents[index].data["title"]}",
+                                          "${_listEvents[index].get("title")}",
                                           maxLines: 2,
                                           style: TextStyle(
                                               fontSize: 18,
@@ -123,13 +123,13 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                           children: <Widget>[
                                             Text(
                                               //"Points- ${_listEvents[index].get("points")}",
-                                              "Points- ${(_listEvents[index].data["points"]* Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
+                                              "Points- ${(_listEvents[index].get("points")* Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
                                               style: TextStyle(
                                                   fontSize: 14),
                                             ),
                                             Text(
                                               // "Status- ${_listEvents[index].get("type")}",
-                                              "Status- ${_listEvents[index].data["status"]}",
+                                              "Status- ${_listEvents[index].get("status")}",
                                               style: TextStyle(
                                                   fontSize: 14),
                                             ),
@@ -137,7 +137,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                         ),
                                         trailing: Text(
                                           // "${DateFormat.yMd().format(DateTime.parse(_listEvents[index].get('time').toString()))}",
-                                          "${DateFormat.yMd().format(DateTime.parse(_listEvents[index].data['date'].toString()))}",
+                                          "${DateFormat.yMd().format(DateTime.parse(_listEvents[index].get('date').toString()))}",
                                           style:
                                           TextStyle(fontSize: 10),
                                         ),

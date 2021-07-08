@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:democoin/models/users.dart';
 import 'package:democoin/provider_package/allNotifiers.dart';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/firebase_auth_services.dart';
 import 'package:democoin/utils/tools.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -15,6 +16,7 @@ import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/Constants.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info/package_info.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +34,8 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
   FirestoreServices firestoreServices = FirestoreServices();
 
-  UnityAdsServices unityAdsServices = UnityAdsServices();
+  AdmobHelper admobHelper =
+  new AdmobHelper();
 
   TextEditingController _multipliedController = TextEditingController();
   FirebaseAuthServices authServices = FirebaseAuthServices();
@@ -48,7 +51,8 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
+    admobHelper.createInterad();
+    admobHelper.createRewardAd();
     checkIfTodaysLeftClick();
     try {
       versionCheck(context);
@@ -73,11 +77,11 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   }
 
   showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
+    admobHelper.showInterad();
   }
 
   showRewardAds() {
-    unityAdsServices.showRewardAds();
+    admobHelper.showRewardAd();
   }
 
   versionCheck(context) async {
@@ -508,11 +512,11 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                             height: 10,
                           ),
                           Container(
-                            height: 60,
-                            child: Align(
-                              alignment: Alignment(0, 1.0),
-                              child: unityAdsServices.BannerAd(),
+                            child: AdWidget(
+                              ad: AdmobHelper.getBannerAd()..load(),
+                              key: UniqueKey(),
                             ),
+                            height: 50,
                           ),
                           SizedBox(
                             height: 10,

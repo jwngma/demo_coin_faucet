@@ -25,11 +25,6 @@ class _TopUsersPageState extends State<TopUsersPage> {
   bool _loadingProducts = true;
   List<DocumentSnapshot> _listUsers = [];
 
-  UnityAdsServices unityAdsServices = UnityAdsServices();
-
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
 
   @override
   void initState() {
@@ -37,7 +32,6 @@ class _TopUsersPageState extends State<TopUsersPage> {
     super.initState();
     getCurrentUserId();
     getTop100Users();
-    UnityAdsServices.init();
   }
 
   getCurrentUserId() async {
@@ -130,7 +124,7 @@ class _TopUsersPageState extends State<TopUsersPage> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color:
-                                              _listUsers[index].data["uid"] ==
+                                              _listUsers[index].get("uid") ==
                                                       currentUid
                                                   ? Colors.red
                                                   : Colors.grey,
@@ -167,19 +161,19 @@ class _TopUsersPageState extends State<TopUsersPage> {
                                                   child: CircleAvatar(
                                                     radius: 50,
                                                     backgroundImage: NetworkImage(
-                                                        "${_listUsers[index].data["profile_photo"]}"),
+                                                        "${_listUsers[index].get("profile_photo")}"),
                                                   ),
                                                 ),
                                                 title: Text.rich(TextSpan(
                                                     text: _listUsers[index]
-                                                        .data["name"],
+                                                        .get("name"),
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold),
                                                     children: [
                                                       TextSpan(
                                                           text:
-                                                              " (${_listUsers[index].data["country"]})",
+                                                              " (${_listUsers[index].get("country")})",
                                                           style: TextStyle(
                                                               fontSize: 8, color: Colors.black54))
                                                     ]))
@@ -189,7 +183,7 @@ class _TopUsersPageState extends State<TopUsersPage> {
                                                       const EdgeInsets.only(
                                                           top: 5),
                                                   child: Text(
-                                                    "${(_listUsers[index].data["points"] * Constants.decimal).toStringAsFixed(8)}" +
+                                                    "${(_listUsers[index].get("points") * Constants.decimal).toStringAsFixed(8)}" +
                                                         "  ${Constants.coin_name}",
                                                     style: TextStyle(
                                                         fontSize: 16,

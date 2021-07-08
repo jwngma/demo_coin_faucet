@@ -27,7 +27,6 @@ class WatchVideosPage extends StatefulWidget {
 
 class _WatchVideosPageState extends State<WatchVideosPage> {
   var firestoreServices = FirestoreServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
 
   var randomReward = Constants.video_reward;
   int clicks_left = 0;
@@ -39,17 +38,10 @@ class _WatchVideosPageState extends State<WatchVideosPage> {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
 
-    UnityAdsServices.init();
+
 
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
-
-  showRewardAds() {
-    unityAdsServices.showRewardAds();
-  }
 
   int currentTimeInSeconds() {
     var ms = new DateTime.now().millisecondsSinceEpoch;
@@ -405,7 +397,6 @@ class _WatchVideosPageState extends State<WatchVideosPage> {
 
 
 
-                                                  showRewardAds();
                                                   if(userData.clicks_left<=0){
                                                     return Tools.showToasts(
                                                         "You can Claim only 250 times aday");
@@ -452,13 +443,7 @@ class _WatchVideosPageState extends State<WatchVideosPage> {
                             SizedBox(
                               height: 10,
                             ),
-                            Container(
-                              height: 60,
-                              child: Align(
-                                alignment: Alignment(0, 1.0),
-                                child: unityAdsServices.BannerAd(),
-                              ),
-                            ),
+
                           ],
                         ),
                       ),

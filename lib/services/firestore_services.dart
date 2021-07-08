@@ -18,7 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class FirestoreServices {
-  Firestore _db = Firestore.instance;
+  FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   // getting Notifications
@@ -26,7 +26,7 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .collection(Constants.notifications)
         .orderBy("time", descending: false)
         .snapshots();
@@ -54,32 +54,32 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        //  .then((DocumentSnapshot) => DocumentSnapshot.get("points"));
-        .then((DocumentSnapshot) => DocumentSnapshot.data['today']);
+          .then((DocumentSnapshot) => DocumentSnapshot.get("today"));
+        //.then((DocumentSnapshot) => DocumentSnapshot.data['today']);
   }
 
   Future<AddressModel> getUpdatedValues() async {
     final FirebaseUser user = await auth.currentUser();
-    return await _db.collection(Constants.Users).document(user.uid).get().then(
-        //     (DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data()));
-        (DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data));
+    return await _db.collection(Constants.Users).doc(user.uid).get().then(
+             (DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data()));
+        //(DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data));
   }
 
   Future<AppData> getAppData() async {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => AppData.fromJson(DocumentSnapshot.data));
+        .then((DocumentSnapshot) => AppData.fromJson(DocumentSnapshot.data()));
   }
 
   Future<AccountData> getAccountData() async {
     final FirebaseUser user = await auth.currentUser();
-    return await _db.collection(Constants.Users).document(user.uid).get().then(
-        (DocumentSnapshot) => AccountData.fromJson(DocumentSnapshot.data));
+    return await _db.collection(Constants.Users).doc(user.uid).get().then(
+        (DocumentSnapshot) => AccountData.fromJson(DocumentSnapshot.data()));
   }
 
   Future addToday() async {
@@ -87,14 +87,14 @@ class FirestoreServices {
     var map = Map<String, dynamic>();
     map['clicks_left'] = 250;
     map['today'] = DateTime.now().day.toString();
-    await _db.collection(Constants.Users).document(user.uid).updateData(map);
+    await _db.collection(Constants.Users).doc(user.uid).update(map);
   }
 
   Future addIntervalTimer(String timerTitle) async {
     final FirebaseUser user = await auth.currentUser();
     var map = Map<String, dynamic>();
     map['${timerTitle}'] = DateTime.now().day;
-    await _db.collection(Constants.Users).document(user.uid).updateData(map);
+    await _db.collection(Constants.Users).doc(user.uid).update(map);
   }
 
   // add group messge
@@ -108,7 +108,7 @@ class FirestoreServices {
     groupMap['time'] = DateTime.now().toIso8601String();
     groupMap['name'] = name;
     groupMap['uid'] = user.uid;
-    await _db.collection(Constants.groupChatName).document().setData(groupMap);
+    await _db.collection(Constants.groupChatName).doc().set(groupMap);
   }
 
   Future<List<DocumentSnapshot>> getTransactionss() async {
@@ -116,11 +116,11 @@ class FirestoreServices {
     List<DocumentSnapshot> _list = [];
     Query query = _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .collection(Constants.transactions)
         .orderBy("date", descending: false);
-    QuerySnapshot querySnapshot = await query.getDocuments();
-    _list = querySnapshot.documents;
+    QuerySnapshot querySnapshot = await query.get();
+    _list = querySnapshot.docs;
 
     return _list;
   }
@@ -130,27 +130,27 @@ class FirestoreServices {
     print("Get Points is called");
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['points']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('points'));
   }
 
   Future getTotalUsers() async {
     print("Get TOTAL USERS is called");
     return await _db
         .collection(Constants.generalInformations)
-        .document("total")
+        .doc("total")
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['users']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('users'));
   }
 
   Future getLastNoticeDate() async {
     print("Get The last Notified date  is called");
     return await _db
         .collection(Constants.generalInformations)
-        .document("lastUpdated")
+        .doc("lastUpdated")
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['lastNotificeDate']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get("lastNotificeDate"));
   }
 
   Future getClicks(FirebaseUser currentUser) async {
@@ -158,18 +158,18 @@ class FirestoreServices {
     print("Get Clicks is called");
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['clicks']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get("clicks"));
   }
 
   Future getName() async {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['name']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('name'));
   }
 
   Future getCurrentUid() async {
@@ -181,57 +181,57 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['activePlan']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('activePlan'));
   }
 
   Future getCountry() async {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['country']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('country'));
   }
 
   Future getCoinbaseEmail() async {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['coinbase_email']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('coinbase_email'));
   }
 
   Future<Users> getUserprofile() async {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => Users.fromMap(DocumentSnapshot.data));
+        .then((DocumentSnapshot) => Users.fromMap(DocumentSnapshot.data()));
   }
 
   Future<AppStatus> getAppStatus() async {
     return await _db
         .collection(Constants.appStatus)
-        .document("app_status")
+        .doc("app_status")
         .get()
-        .then((DocumentSnapshot) => AppStatus.fromMap(DocumentSnapshot.data));
+        .then((DocumentSnapshot) => AppStatus.fromMap(DocumentSnapshot.data()));
   }
 
   Future<AddressModel> getUserAddress() async {
     final FirebaseUser user = await auth.currentUser();
-    return await _db.collection(Constants.Users).document(user.uid).get().then(
-        (DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data));
+    return await _db.collection(Constants.Users).doc(user.uid).get().then(
+        (DocumentSnapshot) => AddressModel.fromJson(DocumentSnapshot.data()));
   }
 
   Future addPoints(int points) async {
     final FirebaseUser user = await auth.currentUser();
     var map = Map<String, dynamic>();
     map['points'] = points;
-    await _db.collection(Constants.Users).document(user.uid).updateData({
+    await _db.collection(Constants.Users).doc(user.uid).update({
       "points": FieldValue.increment(points),
       "clicks": FieldValue.increment(1),
       "clicks_left": FieldValue.increment(-1),
@@ -243,7 +243,7 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     var map = Map<String, dynamic>();
     map['points'] = points;
-    await _db.collection(Constants.Users).document(user.uid).updateData({
+    await _db.collection(Constants.Users).doc(user.uid).update({
       "points": FieldValue.increment(points),
       "clicks": FieldValue.increment(1),
       "clicks_left": FieldValue.increment(-1),
@@ -256,8 +256,8 @@ class FirestoreServices {
           .round();
       await _db
           .collection(Constants.Users)
-          .document(user.uid)
-          .updateData(nextClaimMap);
+          .doc(user.uid)
+          .update(nextClaimMap);
     });
   }
 
@@ -266,7 +266,7 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     var map = Map<String, dynamic>();
     map['points'] = points;
-    await _db.collection(Constants.Users).document(user.uid).updateData({
+    await _db.collection(Constants.Users).doc(user.uid).update({
       "points": FieldValue.increment(points),
       "clicks": FieldValue.increment(1),
       "clicks_left": FieldValue.increment(-1),
@@ -279,8 +279,8 @@ class FirestoreServices {
           .round();
       await _db
           .collection(Constants.Users)
-          .document(user.uid)
-          .updateData(nextClaimMap);
+          .doc(user.uid)
+          .update(nextClaimMap);
     });
   }
 
@@ -290,7 +290,7 @@ class FirestoreServices {
     //update to user Database
     final FirebaseUser user = await auth.currentUser();
     // String uid = await Constants.prefs.getString(Constants.uid);
-    await _db.collection(Constants.Users).document(user.uid).updateData({
+    await _db.collection(Constants.Users).doc(user.uid).update({
       "points": 0,
       "clicks": 0,
     }).then((val) async {
@@ -308,15 +308,15 @@ class FirestoreServices {
       String docId = user.uid + "${DateTime.now().toIso8601String()}";
       await _db
           .collection("WithdrawRequest")
-          .document(docId)
-          .setData(withdrawMap)
+          .doc(docId)
+          .set(withdrawMap)
           .then((value) async {
         await _db
             .collection(Constants.Users)
-            .document(user.uid)
+            .doc(user.uid)
             .collection("transactions")
-            .document(docId)
-            .setData(withdrawMap)
+            .doc(docId)
+            .set(withdrawMap)
             .then((val) {
           print("Withdraw Request have been added");
         });
@@ -338,8 +338,8 @@ class FirestoreServices {
 
     await _db
         .collection(Constants.Users)
-        .document(user.uid)
-        .updateData(userMap)
+        .doc(user.uid)
+        .update(userMap)
         .then((val) {
       print("User profile Updated");
     }).catchError((error) {
@@ -360,8 +360,8 @@ class FirestoreServices {
 
     await _db
         .collection(Constants.Users)
-        .document(user.uid)
-        .updateData(addressMap)
+        .doc(user.uid)
+        .update(addressMap)
         .then((val) {
       print("User Address Updated");
     }).catchError((error) {
@@ -374,24 +374,24 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     var eventExist = await _db
         .collection(Constants.weeklyEvent)
-        .document(
+        .doc(
             "${DateTime.now().year.toString()}_${DateTime.now().month.toString()}_${week}")
         .get();
 
     if (eventExist.exists) {
       await _db
           .collection(Constants.weeklyEvent)
-          .document(
+          .doc(
               "${DateTime.now().year.toString()}_${DateTime.now().month.toString()}_${week}")
-          .updateData({
+          .update({
         "participants": FieldValue.arrayUnion([user.uid])
       });
     } else {
       await _db
           .collection(Constants.weeklyEvent)
-          .document(
+          .doc(
               "${DateTime.now().year.toString()}_${DateTime.now().month.toString()}_${week}")
-          .setData({
+          .set({
         "participants": FieldValue.arrayUnion([user.uid])
       });
     }
@@ -401,9 +401,9 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['email']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('email'));
   }
 
   Future<Country> getCountryForSignup() async {
@@ -429,9 +429,9 @@ class FirestoreServices {
     final FirebaseUser user = await auth.currentUser();
     return await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .get()
-        .then((DocumentSnapshot) => DocumentSnapshot.data['${timerTitle}']);
+        .then((DocumentSnapshot) => DocumentSnapshot.get('${timerTitle}'));
   }
 
   Future<List<DocumentSnapshot>> getTopUsers() async {
@@ -440,8 +440,8 @@ class FirestoreServices {
         .collection(Constants.Users)
         .orderBy("points", descending: true)
         .limit(50);
-    QuerySnapshot querySnapshot = await query.getDocuments();
-    _list = querySnapshot.documents;
+    QuerySnapshot querySnapshot = await query.get();
+    _list = querySnapshot.docs;
 
     return _list;
   }
@@ -453,9 +453,9 @@ class FirestoreServices {
   Stream<Users> getUserData(String uid) {
     return _db
         .collection(Constants.Users)
-        .document(uid)
+        .doc(uid)
         .snapshots()
-        .map((event) => Users.fromMap(event.data));
+        .map((event) => Users.fromMap(event.data()));
   }
 
   Future<bool> addInAppTransactions(BuildContext context,
@@ -490,22 +490,22 @@ class FirestoreServices {
 
     await _db
         .collection(Constants.Users)
-        .document(user.uid)
+        .doc(user.uid)
         .collection("transactions")
-        .document(inAppTransactionModel.purchaseID)
-        .setData(transMap)
+        .doc(inAppTransactionModel.purchaseID)
+        .set(transMap)
         .then((value) async {
       await _db
           .collection(Constants.Users)
-          .document(user.uid)
-          .updateData(purchasedMap)
+          .doc(user.uid)
+          .update(purchasedMap)
           .then((value) async {
         await _db
             .collection(Constants.Users)
-            .document(user.uid)
+            .doc(user.uid)
             .collection(Constants.notifications)
-            .document()
-            .setData(notificationMap);
+            .doc()
+            .set(notificationMap);
       }).then((value) {
         return true;
       });
@@ -521,8 +521,8 @@ class FirestoreServices {
     referalMap['referralId'] = refLink;
     await _db
         .collection(Constants.Users)
-        .document(user.uid)
-        .updateData(referalMap);
+        .doc(user.uid)
+        .update(referalMap);
   }
 
 }

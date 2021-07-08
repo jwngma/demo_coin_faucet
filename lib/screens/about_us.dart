@@ -17,18 +17,15 @@ class AboutUsScreen extends StatefulWidget {
 }
 
 class _AboutUsScreenState extends State<AboutUsScreen> {
-  UnityAdsServices unityAdsServices = UnityAdsServices();
+
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
+
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +88,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
 
     return WillPopScope(
       onWillPop: () {
-       showInterstitialAds();
+
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

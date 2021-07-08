@@ -30,7 +30,6 @@ class MultiplyTheNumbers extends StatefulWidget {
 
 class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
   FirebaseAuthServices authServices = FirebaseAuthServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
 
   TextEditingController _multipliedController = TextEditingController();
   int multipliedNumber = 0;
@@ -45,7 +44,6 @@ class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
     checkIfTodaysLeftClick();
     try {
       versionCheck(context);
@@ -77,13 +75,6 @@ class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
     return (ms / 1000).round();
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
-
-  showRewardAds() {
-    unityAdsServices.showRewardAds();
-  }
 
   versionCheck(context) async {
     final PackageInfo info = await PackageInfo.fromPlatform();
@@ -533,13 +524,7 @@ class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
                           SizedBox(
                             height: 10,
                           ),
-                          Container(
-                            height: 60,
-                            child: Align(
-                              alignment: Alignment(0, 1.0),
-                              child: unityAdsServices.BannerAd(),
-                            ),
-                          ),
+
                           SizedBox(
                             height: 10,
                           ),
@@ -560,7 +545,7 @@ class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
                                                         "Guest Count $guessedTimes");
 
                                                     if (!updated) {
-                                                      showInterstitialAds();
+
                                                       return showToastWithMessage(
                                                           "Please Update The App To The Latest Version");
                                                     }
@@ -574,7 +559,7 @@ class _MultiplyTheNumbersState extends State<MultiplyTheNumbers> {
                                                       return Tools.showToasts(
                                                           "You can Claim only 250 times aday");
                                                     }
-                                                   showRewardAds();
+
 
                                                     ProgressDialog pr= ProgressDialog(context, isDismissible: true);
                                                     pr.show();

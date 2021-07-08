@@ -12,12 +12,11 @@ import 'package:democoin/provider_package/allNotifiers.dart';
 import 'package:democoin/screens/AnnouncementPage.dart';
 import 'package:democoin/screens/ReferralPage.dart';
 import 'package:democoin/screens/account_page.dart';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/utils/Constants.dart';
 import 'package:democoin/utils/tools.dart';
 import 'package:democoin/widgets/message_dialog_with_ok.dart';
-import 'package:democoin/widgets/showLoading.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -43,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool showLoading = true;
   FirestoreServices fireStoreServices = FirestoreServices();
   FirebaseAuthServices authServices = FirebaseAuthServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
+  AdmobHelper admobHelper =
+  new AdmobHelper();
   int totalUser = 0;
   var today = "";
   int timerLeft;
@@ -55,7 +55,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
+    admobHelper.createInterad();
+    admobHelper.createRewardAd();
     checkIfTodaysLeftClick();
     _controller = AnimationController(
       vsync: this,
@@ -71,11 +72,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
+    admobHelper.showInterad();
   }
 
   showRewardAds() {
-    unityAdsServices.showRewardAds();
+    admobHelper.showRewardAd();
   }
 
   checkIfTodaysLeftClick() async {
@@ -1066,10 +1067,10 @@ class _HomeScreenState extends State<HomeScreen>
                           GestureDetector(
                             onTap: () {
                               showInterstitialAds();
-                                               Navigator.of(context)
+              /*                                 Navigator.of(context)
                                       .push(MaterialPageRoute(builder: (_) {
                                     return ReferralPage();
-                                  }));
+                                  }));*/
                             },
                             child: Container(
                               height: 85,
@@ -1118,10 +1119,10 @@ class _HomeScreenState extends State<HomeScreen>
                                   IconButton(
                                       onPressed: () {
                                         showInterstitialAds();
-                                        Navigator.of(context)
+                       /*                 Navigator.of(context)
                                             .push(MaterialPageRoute(builder: (_) {
                                           return ReferralPage();
-                                        }));
+                                        }));*/
 
                                       },
                                       icon: Icon(Icons.person_add))

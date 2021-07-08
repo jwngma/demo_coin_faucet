@@ -24,7 +24,6 @@ class HourlyBonusPage extends StatefulWidget {
 
 class _HourlyBonusPageState extends State<HourlyBonusPage> {
   var firestoreServices = FirestoreServices();
-  UnityAdsServices unityAdsServices = UnityAdsServices();
   AddressModel addressModel;
   var claimReward = Constants.hourly_reward;
   int timerLeft=-1;
@@ -34,16 +33,9 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
   void initState() {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-    UnityAdsServices.init();
+
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
-
-  showRewardAds() {
-    unityAdsServices.showRewardAds();
-  }
 
   int currentTimeInSeconds() {
     var ms = new DateTime.now().millisecondsSinceEpoch;
@@ -390,7 +382,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                                                     return Tools.showToasts(
                                                         "You can Claim only 250 times aday");
                                                   }
-                                                  showInterstitialAds();
+//                                                  showInterstitialAds();
 
                                                   ProgressDialog pr= ProgressDialog(context, isDismissible: true);
                                                   pr.show();
@@ -434,13 +426,6 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                                         child: Text("Collected")),
                             SizedBox(
                               height: 10,
-                            ),
-                            Container(
-                              height: 60,
-                              child: Align(
-                                alignment: Alignment(0, 1.0),
-                                child: unityAdsServices.BannerAd(),
-                              ),
                             ),
                             SizedBox(
                               height: 10,

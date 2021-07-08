@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:democoin/provider_package/allNotifiers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:democoin/models/users.dart';
 import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/Constants.dart';
 import 'package:democoin/utils/tools.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 @immutable
 class User {
@@ -21,7 +19,7 @@ class User {
 class FirebaseAuthServices {
   final _firebaseAuth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn();
-  static final Firestore firestore = Firestore.instance;
+  static final FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirestoreServices firestoreServices = FirestoreServices();
 
   Users users = Users();
@@ -41,10 +39,6 @@ class FirebaseAuthServices {
     return currentUser;
   }
 
-  Future<User> signInAnonymously() async {
-    final authResult = await _firebaseAuth.signInAnonymously();
-    return _userFromFirebase(authResult.user);
-  }
 
   Future<void> signOut() async {
     return _firebaseAuth.signOut();
@@ -62,6 +56,7 @@ class FirebaseAuthServices {
       final AuthCredential authCredential = GoogleAuthProvider.getCredential(
           idToken: googleSignInAuthentication.idToken,
           accessToken: googleSignInAuthentication.accessToken);
+
       print(authCredential.toString());
 
       FirebaseUser user =
@@ -73,13 +68,38 @@ class FirebaseAuthServices {
     }
   }
 
+/*// create with gmail
+  Future<FirebaseUser> signInWithGoogle() async {
+    print("Login With Google");
+
+    GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleSignInAccount.authentication;
+
+    if (googleSignInAccount != null) {
+*//*      print("Login With Google is not null");
+      GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;*//*
+*//*      final AuthCredential authCredential = GoogleAuthProvider.getCredential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);*//*
+*//*
+      print(authCredential.toString());*//*
+
+      FirebaseUser user =
+          (await _firebaseAuth.signInWithGoogle(idToken: googleAuth.accessToken, accessToken: googleAuth.idToken));
+
+      return user;
+    } else {
+      return null;
+    }
+  }*/
   Future<bool> authenticateUser(FirebaseUser firebaseUser) async {
     QuerySnapshot querySnapshot = await firestore
         .collection(Constants.Users)
         .where("email", isEqualTo: firebaseUser.email)
-        .getDocuments();
+        .get();
 
-    List<DocumentSnapshot> docs = querySnapshot.documents;
+    List<DocumentSnapshot> docs = querySnapshot.docs;
 
     print("Doc Length(Email check");
 
@@ -132,20 +152,20 @@ class FirebaseAuthServices {
 
     await firestore
         .collection(Constants.Users)
-        .document(currentuser.uid)
-        .setData(users.toMap(users))
+        .doc(currentuser.uid)
+        .set(users.toMap(users))
         .then((value) async {
       await firestore
           .collection(Constants.generalInformations)
-          .document("total")
-          .updateData(userMap)
+          .doc("total")
+          .update(userMap)
           .then((value) async {
         await firestore
             .collection(Constants.Users)
-            .document(currentuser.uid)
+            .doc(currentuser.uid)
             .collection(Constants.notifications)
-            .document()
-            .setData(userWelcomeNotificationMap);
+            .doc()
+            .set(userWelcomeNotificationMap);
       });
     });
   }
@@ -165,8 +185,8 @@ class FirebaseAuthServices {
 
     firestore
         .collection(Constants.Users)
-        .document(currentuser.uid)
-        .updateData(map);
+        .doc(currentuser.uid)
+        .update(map);
     ;
   }
 
@@ -176,8 +196,8 @@ class FirebaseAuthServices {
     map["email"] = users.email;
     await firestore
         .collection(Constants.Users)
-        .document(users.uid)
-        .updateData(map);
+        .doc(users.uid)
+        .update(map);
   }
 
   Future signOutWhenGoogle() async {

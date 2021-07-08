@@ -1,3 +1,4 @@
+/*
 import 'package:democoin/models/users.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/services/dynamicLinksServices.dart';
@@ -20,18 +21,15 @@ class ReferralPage extends StatefulWidget {
 }
 
 class _ReferralPageState extends State<ReferralPage> {
-  UnityAdsServices unityAdsServices = UnityAdsServices();
+
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    UnityAdsServices.init();
+
   }
 
-  showInterstitialAds() {
-    unityAdsServices.showInterstitialAd();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,3 +225,4 @@ class _ReferralPageState extends State<ReferralPage> {
     });
   }
 }
+*/

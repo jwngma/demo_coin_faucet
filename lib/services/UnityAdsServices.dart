@@ -1,3 +1,4 @@
+/*
 import 'dart:io';
 import 'package:democoin/provider_package/allNotifiers.dart';
 import 'package:democoin/utils/Constants.dart';
@@ -66,3 +67,4 @@ class AdManager {
     return 'Rewarded_Android';
   }
 }
+*/
