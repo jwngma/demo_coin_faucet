@@ -45,9 +45,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const PLAY_STORE_URL = Constants.app_link;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  //final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   FirestoreServices firestoreServices = FirestoreServices();
+  //
 
   String email = '';
 
@@ -84,32 +84,29 @@ class _HomePageState extends State<HomePage> {
       print(e);
     }
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-/*    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
+    //
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("onMessage: $event");
 
-        showDialog(
-            context: context,
-            builder: (context) => CustomDialogWithOk(
-                  title: message['notification']['title'],
-                  description: message['notification']['body'],
-                  primaryButtonText: "Ok",
-                  primaryButtonRoute: HomePage.routeName,
-                ));
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-        _navigateToItemDetail(message);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-        _navigateToItemDetail(message);
-      },
-    );*/
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialogWithOk(
+            title: event.notification.body,
+            description: event.notification.body,
+            primaryButtonText: "Ok",
+            primaryButtonRoute: HomePage.routeName,
+          ));
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("onLaunch: $message");
+      _navigateToItemDetail(message);
+    });
     super.initState();
   }
 
-
+  showInterstitialAds() {
+    //
+  }
 
 /*  getEmailAddress() async {
     email = await firestoreServices.getEmail();
@@ -126,7 +123,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   //PRIVATE METHOD TO HANDLE NAVIGATION TO SPECIFIC PAGE
-  void _navigateToItemDetail(Map<String, dynamic> message) {
+  void _navigateToItemDetail(message) {
     final MessageBean item = _itemForMessage(message);
     // Clear away dialogs
     Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
@@ -153,8 +150,10 @@ class _HomePageState extends State<HomePage> {
 
     try {
       // Using default duration to force fetching from remote server.
-      await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-      await remoteConfig.activateFetched();
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+          fetchTimeout: Duration(seconds: 0)
+      ));
+      await remoteConfig.activate();
       remoteConfig.getString('force_update_current_version');
       double newVersion = double.parse(remoteConfig
           .getString('force_update_current_version')
@@ -163,7 +162,7 @@ class _HomePageState extends State<HomePage> {
       if (newVersion > currentVersion) {
         _showVersionDialog(context);
       }
-    } on FetchThrottledException catch (exception) {
+    } on PlatformException catch (exception) {
       // Fetch throttled.
       print(exception);
     } catch (exception) {
@@ -346,6 +345,7 @@ class _HomePageState extends State<HomePage> {
                             title: Text("Home"),
                             leading: Icon(Icons.home),
                             onTap: () {
+                              showInterstitialAds();
                               Navigator.of(context).pop();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
@@ -376,6 +376,7 @@ class _HomePageState extends State<HomePage> {
                             title: Text("Redeem"),
                             leading: Icon(Icons.account_balance_wallet),
                             onTap: () {
+                              showInterstitialAds();
                               Navigator.of(context).pop();
 
                               Navigator.push(context,
@@ -408,6 +409,7 @@ class _HomePageState extends State<HomePage> {
                             leading: Icon(Icons.help),
                             onTap: () {
                               Navigator.of(context).pop();
+                              showInterstitialAds();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return HelpPage();
@@ -444,17 +446,18 @@ class _HomePageState extends State<HomePage> {
                             height: 1,
                             color: Colors.white,
                           ),
-       /*                   ListTile(
+                          ListTile(
                             title: Text("Share App"),
                             leading: Icon(Icons.share),
                             onTap: () {
                               Navigator.of(context).pop();
+                              showInterstitialAds();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                     return ReferralPage();
                                   }));
                             },
-                          ),*/
+                          ),
                           Divider(
                             height: 1,
                             color: Colors.white,

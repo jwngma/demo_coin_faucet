@@ -31,21 +31,24 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
-    getInValidCountries();
+    //getInValidCountries();
   }
 
   var listInValidCountries = [];
 
   getInValidCountries() async {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
-
+    RemoteConfigSettings settings = new RemoteConfigSettings();
+    remoteConfig.setConfigSettings(settings);
     try {
-      await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-      await remoteConfig.activateFetched();
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+          fetchTimeout: Duration(seconds: 0)
+      ));
+      await remoteConfig.activate();
       var countries = remoteConfig.getString('invalidCountries');
       var a = '${countries}';
       listInValidCountries = json.decode(a);
-    } on FetchThrottledException catch (exception) {
+    } on PlatformException catch (exception) {
       print(exception);
     } catch (exception) {
       print(
@@ -74,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       isLoginPressed = true;
     });
-    auth.signInWithGoogle().then((FirebaseUser user) {
+    auth.signInWithGoogle().then((user) {
       if (user != null) {
         autheticateUser(user, auth);
       } else {
@@ -88,9 +91,9 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
 
-  autheticateUser(FirebaseUser user, FirebaseAuthServices auth) {
+  autheticateUser(UserCredential user, FirebaseAuthServices auth) {
     if (user != null) {
-      auth.authenticateUser(user).then((isNewUser) {
+     auth.authenticateUser(user).then((isNewUser) {
         isLoginPressed = false;
         print("User is ${isNewUser.toString()}");
         if (isNewUser) {
@@ -251,27 +254,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         visible: true,
                         child: GoogleSignInButton(onPressed: () async {
                           if (terms_accepted) {
-                            final auth = Provider.of<FirebaseAuthServices>(
-                                context,
-                                listen: false);
-                            try {
-                              String country = await firestoreServices
-                                  .getCountryForSignup()
-                                  .then((value) => value.country);
-                              if (listInValidCountries
-                                  .toList()
-                                  .contains(country)) {
-                                showToast(
-                                    "Dear User We are not taking new registration from your country right now. Do Check us Again in near future");
-                                return;
-                              } else {
+                            final auth = FirebaseAuthServices();
                                 performLogin(auth);
-                              }
-                            } catch (error) {
-                              setState(() {
-                                _warning = error.message;
-                              });
-                            }
+
                           } else {
                             showToast("Accept the Terms And Conditions");
                           }

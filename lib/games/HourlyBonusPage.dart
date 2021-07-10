@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:democoin/models/users.dart';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/utils/tools.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/Constants.dart';
 import 'package:democoin/widgets/message_dialog_with_ok.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -24,16 +26,24 @@ class HourlyBonusPage extends StatefulWidget {
 
 class _HourlyBonusPageState extends State<HourlyBonusPage> {
   var firestoreServices = FirestoreServices();
+  //
   AddressModel addressModel;
-  var claimReward = Constants.hourly_reward;
+  var claimReward = Constants.claim_reward;
   int timerLeft=-1;
   bool clicked = false;
+  AdmobHelper admobHelper = new AdmobHelper();
 
   @override
   void initState() {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
+    MobileAds.instance.initialize();
+    admobHelper.createRewardAd();
+  }
 
+
+  showRewardAds() {
+    admobHelper.showRewardAd();
   }
 
 
@@ -299,7 +309,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                                             horizontal: 5,
                                           ),
                                           child: Text(
-                                            "My Earning: ${(userData.points * Constants.decimal).toStringAsFixed(8)} ${Constants.symbol}",
+                                            "My Earning: ${(userData.points * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                             style: GoogleFonts.abhayaLibre(
                                                 fontSize: 22,
                                                 color: Colors.white,
@@ -328,7 +338,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                               height: 20,
                             ),
                             Text(
-                              "Congratulation! \nYou have Won ${(claimReward * Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
+                              "Congratulation! \nYou have Won ${(claimReward * Constants.decimal).toStringAsFixed(0)} ${Constants.coin_name}",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 22,
@@ -339,7 +349,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                               height: 30,
                             ),
                             Text(
-                              "* Open Hourly Bonus every one Hour and Win upto   ${(Constants.hourly_reward * Constants.decimal).toStringAsFixed(8)}  ${Constants.coin_name}",
+                              "* Open Hourly Bonus every one Hour and Win upto   ${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)}  ${Constants.coin_name}",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 15,
@@ -382,7 +392,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                                                     return Tools.showToasts(
                                                         "You can Claim only 250 times aday");
                                                   }
-//                                                  showInterstitialAds();
+                                                  showRewardAds();
 
                                                   ProgressDialog pr= ProgressDialog(context, isDismissible: true);
                                                   pr.show();
@@ -427,6 +437,7 @@ class _HourlyBonusPageState extends State<HourlyBonusPage> {
                             SizedBox(
                               height: 10,
                             ),
+
                             SizedBox(
                               height: 10,
                             ),

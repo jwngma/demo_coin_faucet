@@ -12,6 +12,7 @@ class AuthWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(userSnapshot.connectionState.toString());
     if (userSnapshot.connectionState == ConnectionState.active) {
       return userSnapshot.hasData ? HomePage() : SignUpPage();
     }

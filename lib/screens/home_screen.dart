@@ -1,36 +1,33 @@
 import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:democoin/games/FreeCashPage.dart';
-import 'package:democoin/games/WatchVideosPage.dart';
 import 'package:democoin/games/AddTheNumbers.dart';
+import 'package:democoin/games/FreeCashPage.dart';
+import 'package:democoin/games/HourlyBonusPage.dart';
+import 'package:democoin/games/LoadWebviewUrlsPage.dart';
 import 'package:democoin/games/MultiplyTheNumbers.dart';
-import 'package:democoin/models/AppData.dart';
-import 'package:democoin/models/address_model.dart';
+import 'package:democoin/games/WatchVideosPage.dart';
+import 'package:democoin/games/WeeklyGiveAwayPage.dart';
 import 'package:democoin/models/users.dart';
-import 'package:democoin/provider_package/allNotifiers.dart';
-import 'package:democoin/screens/AnnouncementPage.dart';
-import 'package:democoin/screens/ReferralPage.dart';
-import 'package:democoin/screens/account_page.dart';
 import 'package:democoin/services/AdmobHelper.dart';
-import 'package:democoin/services/UnityAdsServices.dart';
+import 'package:democoin/services/firebase_auth_services.dart';
+import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/Constants.dart';
 import 'package:democoin/utils/tools.dart';
 import 'package:democoin/widgets/message_dialog_with_ok.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:democoin/games/HourlyBonusPage.dart';
-import 'package:democoin/games/WeeklyGiveAwayPage.dart';
-import 'package:democoin/models/appStatus.dart';
-import 'package:democoin/services/firebase_auth_services.dart';
-import 'package:democoin/services/firestore_services.dart';
-
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'AnnouncementPage.dart';
+import 'ReferralPage.dart';
+import 'account_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -42,21 +39,27 @@ class _HomeScreenState extends State<HomeScreen>
   bool showLoading = true;
   FirestoreServices fireStoreServices = FirestoreServices();
   FirebaseAuthServices authServices = FirebaseAuthServices();
-  AdmobHelper admobHelper =
-  new AdmobHelper();
   int totalUser = 0;
-  var today = "";
+  var today = "1";
   int timerLeft;
   String lastNotifiedDate;
   bool clicked = false;
   double _scale;
   AnimationController _controller;
+  InterstitialAd ad;
+
+  RewardedAd _rewardedAd;
+  int _numRewardedLoadAttempts = 0;
+  AdmobHelper admobHelper = new AdmobHelper();
+
 
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    admobHelper.createInterad();
+    MobileAds.instance.initialize();
     admobHelper.createRewardAd();
+    admobHelper.createInterad();
+
     checkIfTodaysLeftClick();
     _controller = AnimationController(
       vsync: this,
@@ -71,19 +74,19 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
   }
 
-  showInterstitialAds() {
-    admobHelper.showInterad();
-  }
+
 
   showRewardAds() {
     admobHelper.showRewardAd();
   }
 
-  checkIfTodaysLeftClick() async {
-    var firestoreServices =
-        Provider.of<FirestoreServices>(context, listen: false);
-    var nextClaimTime = await firestoreServices.getNextClickTime("nextClaim");
+  showInterstitialAds(){
+    admobHelper.showInterad();
+  }
 
+  checkIfTodaysLeftClick() async {
+    var firestoreServices = FirestoreServices();
+    var nextClaimTime = await firestoreServices.getNextClickTime("nextClaim");
     today = await firestoreServices.getToday();
 
     if (today != DateTime.now().day.toString()) {
@@ -155,127 +158,23 @@ class _HomeScreenState extends State<HomeScreen>
         ProgressDialog(context, isDismissible: false);
     progressDialog.show();
 
-    if (userData.premiumTill > currentTimeInSeconds()) {
-      switch (toBeginningOfSentenceCase(userData.activePlan)) {
-        case Constants.Standard:
-          fireStoreServices
-              .addPointsForClaim(
-                  Constants.standard_reward, title, days, min, secs)
-              .then((val) {
-            progressDialog.hide();
-            setState(() {
-              timerLeft = Constants.claimTimer * 60;
-              clicked = !clicked;
-            });
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialogWithOk(
-                      title: "Rewarded Successfully",
-                      description:
-                          "You Have Claimed Your ${Constants.coin_name} Successfully",
-                      primaryButtonText: "Ok",
-                    ));
-          });
-          break;
-        case Constants.Premium:
-          fireStoreServices
-              .addPointsForClaim(
-                  Constants.premium_reward, title, days, min, secs)
-              .then((val) {
-            progressDialog.hide();
-            setState(() {
-              timerLeft = Constants.claimTimer * 60;
-              clicked = !clicked;
-            });
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialogWithOk(
-                      title: "Rewarded Successfully",
-                      description:
-                          "You Have Claimed Your ${Constants.coin_name} Successfully",
-                      primaryButtonText: "Ok",
-                    ));
-          });
-          break;
-        case Constants.Ultra_Premium:
-          fireStoreServices
-              .addPointsForClaim(
-                  Constants.ultraPremium_reward, title, days, min, secs)
-              .then((val) {
-            progressDialog.hide();
-            setState(() {
-              timerLeft = Constants.claimTimer * 60;
-              clicked = !clicked;
-            });
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialogWithOk(
-                      title: "Rewarded Successfully",
-                      description:
-                          "You Have Claimed Your ${Constants.coin_name} Successfully",
-                      primaryButtonText: "Ok",
-                    ));
-          });
-          break;
-        case Constants.isolated:
-          fireStoreServices
-              .addPointsForClaim(
-                  Constants.isolated_reward, title, days, min, secs)
-              .then((val) {
-            progressDialog.hide();
-            setState(() {
-              timerLeft = Constants.claimTimer * 60;
-              clicked = !clicked;
-            });
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialogWithOk(
-                      title: "Rewarded Successfully",
-                      description:
-                          "You Have Claimed Your ${Constants.coin_name} Successfully",
-                      primaryButtonText: "Ok",
-                    ));
-          });
-          break;
-        default:
-          fireStoreServices
-              .addPointsForClaim(reward, title, days, min, secs)
-              .then((val) {
-            progressDialog.hide();
-            setState(() {
-              timerLeft = Constants.claimTimer * 60;
-              clicked = !clicked;
-            });
-            showDialog(
-                context: context,
-                builder: (context) => CustomDialogWithOk(
-                      title: "Rewardded33 Successfully",
-                      description:
-                          "You Have Claimed Your ${Constants.coin_name} Successfully",
-                      primaryButtonText: "Ok",
-                    ));
-          });
-          break;
-      }
-    } else {
-      fireStoreServices
-          .addPointsForClaim(reward, title, days, min, secs)
-          .then((val) {
-        progressDialog.hide();
-        setState(() {
-          timerLeft = Constants.claimTimer * 60;
-          clicked = !clicked;
-        });
-        showDialog(
-            context: context,
-            builder: (context) => CustomDialogWithOk(
-                  title: "Rewardded Successfully",
-                  description:
-                      "You Have Claimed Your ${Constants.coin_name} Successfully",
-                  primaryButtonText: "Ok",
-                ));
+    fireStoreServices
+        .addPointsForClaim(reward, title, days, min, secs)
+        .then((val) {
+      progressDialog.hide();
+      setState(() {
+        timerLeft = Constants.claimTimer * 60;
+        clicked = !clicked;
       });
-    }
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialogWithOk(
+                title: "Rewardded Successfully",
+                description:
+                    "You Have Claimed Your ${Constants.coin_name} Successfully",
+                primaryButtonText: "Ok",
+              ));
+    });
   }
 
   bool btnenabled = false;
@@ -285,20 +184,18 @@ class _HomeScreenState extends State<HomeScreen>
     var userData = Provider.of<Users>(context);
 
     Timer(Duration(seconds: 5), () {
-      if(mounted){
+      if (mounted) {
         setState(() {
           btnenabled = true;
         });
       }
-
     });
 
     _scale = 1 - _controller.value;
     return userData == null
         ? CircularProgressIndicator()
         : Scaffold(
-            body:
-                SafeArea(
+            body: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -326,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              "${(userData.points * Constants.decimal).toStringAsFixed(8)} ${Constants.symbol}",
+                              "${(userData.points * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -655,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(Constants.hourly_reward * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}",
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -711,7 +608,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(Constants.video_reward * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}",
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -739,7 +636,6 @@ class _HomeScreenState extends State<HomeScreen>
                           GestureDetector(
                             onTap: () {
                               showInterstitialAds();
-
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (_) {
                                 return AddTheNumbers();
@@ -779,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}",
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -796,7 +692,6 @@ class _HomeScreenState extends State<HomeScreen>
                           GestureDetector(
                             onTap: () {
                               showInterstitialAds();
-
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (_) {
                                 return MultiplyTheNumbers();
@@ -836,7 +731,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}",
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -919,7 +814,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           GestureDetector(
                             onTap: () {
-                               showInterstitialAds();
+                              showInterstitialAds();
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (_) {
                                 return FreeCashPage();
@@ -959,7 +854,130 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}",
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              letterSpacing: 1.2,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      height: 90,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              showInterstitialAds();
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (_) {
+                                return WeeklyGiveAwayPage();
+                              }));
+                            },
+                            child: Container(
+                              height: 85,
+                              width: MediaQuery.of(context).size.width * 0.46,
+                              decoration: BoxDecoration(
+                                  color: Colors.indigo,
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Nothing Just",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 15,
+                                              letterSpacing: 1.2,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(left: 10),
+                                        child: AutoSizeText(
+                                          "50 ${Constants.symbol}",
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              letterSpacing: 1.2,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              showInterstitialAds();
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (_) {
+                                return LoadWebiewburlsPage();
+                              }));
+                            },
+                            child: Container(
+                              height: 85,
+                              width: MediaQuery.of(context).size.width * 0.46,
+                              decoration: BoxDecoration(
+                                  color: Colors.indigo,
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Webview",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 20,
+                                              letterSpacing: 1.2,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(left: 10),
+                                        child: AutoSizeText(
+                                          "${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -1025,13 +1043,15 @@ class _HomeScreenState extends State<HomeScreen>
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10))),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 10),
+                                      padding:
+                                          const EdgeInsets.only(left: 10),
                                       child: Text(
                                         "Claimed",
                                         textAlign: TextAlign.center,
@@ -1046,9 +1066,10 @@ class _HomeScreenState extends State<HomeScreen>
                                       height: 4,
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 10),
+                                      padding:
+                                          const EdgeInsets.only(left: 10),
                                       child: AutoSizeText(
-                                        "${(userData.claimed * Constants.decimal).toStringAsFixed(8)}",
+                                        "${(userData.claimed * Constants.decimal).toStringAsFixed(0)}",
                                         maxLines: 1,
                                         style: TextStyle(
                                             letterSpacing: 1.2,
@@ -1067,10 +1088,10 @@ class _HomeScreenState extends State<HomeScreen>
                           GestureDetector(
                             onTap: () {
                               showInterstitialAds();
-              /*                                 Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (_) {
-                                    return ReferralPage();
-                                  }));*/
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (_) {
+                                return ReferralPage();
+                              }));
                             },
                             child: Container(
                               height: 85,
@@ -1106,7 +1127,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         padding:
                                             const EdgeInsets.only(left: 10),
                                         child: AutoSizeText(
-                                          "${(userData.earnedByReferral * Constants.decimal).toStringAsFixed(8)}",
+                                          "${(userData.earnedByReferral * Constants.decimal).toStringAsFixed(0)}",
                                           maxLines: 1,
                                           style: TextStyle(
                                               letterSpacing: 1.2,
@@ -1118,12 +1139,10 @@ class _HomeScreenState extends State<HomeScreen>
                                   ),
                                   IconButton(
                                       onPressed: () {
-                                        showInterstitialAds();
-                       /*                 Navigator.of(context)
-                                            .push(MaterialPageRoute(builder: (_) {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (_) {
                                           return ReferralPage();
-                                        }));*/
-
+                                        }));
                                       },
                                       icon: Icon(Icons.person_add))
                                 ],
@@ -1216,13 +1235,13 @@ class _HomeScreenState extends State<HomeScreen>
             : timerLeft <= 0
                 ? GestureDetector(
                     onTap: () {
-                      showRewardAds();
-                      if(userData.clicks_left<=0){
+                      if (userData.clicks_left <= 0) {
                         return Tools.showToasts(
                             "You can Claim only 250 times aday");
                       }
 
-                      addPoints(Constants.basic_reward, "nextClaim", 0,
+                      showRewardAds();
+                      addPoints(Constants.claim_reward, "nextClaim", 0,
                           Constants.claimTimer, 0, userData);
                     },
                     child: Container(

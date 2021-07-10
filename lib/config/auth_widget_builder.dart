@@ -1,6 +1,7 @@
 import 'package:democoin/games/AddTheNumbers.dart';
 import 'package:democoin/games/MultiplyTheNumbers.dart';
 import 'package:democoin/screens/signup_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:democoin/games/HourlyBonusPage.dart';
@@ -21,62 +22,64 @@ class AuthWidgetBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("Auth Widget Builder");
-    final authServices =
-        Provider.of<FirebaseAuthServices>(context, listen: false);
+    final authServices = FirebaseAuthServices();
     FirestoreServices firestoreServices = FirestoreServices();
 
 
-
-
-
-    return StreamBuilder<User>(
-        stream: authServices.onAuthStateChanged,
-        builder: (context, snapshot) {
-          final user = snapshot.data;
-          if (user != null) {
-            return MultiProvider(
-              providers: [
-                Provider<User>.value(
-                  value: user,
-                ),
-                Provider<FirestoreServices>(
-                  create: (_) => FirestoreServices(),
-                ),
-                Provider<AllNotifier>(
-                  create: (_) => AllNotifier(),
-                ),
-                ChangeNotifierProvider<AllNotifier>(
-                  create: (context) => AllNotifier(),
-                  child: AddTheNumbers(),
-                ),
-                ChangeNotifierProvider<AllNotifier>(
-                  create: (context) => AllNotifier(),
-                  child: SignUpPage(),
-                ),
-                ChangeNotifierProvider<AllNotifier>(
-                  create: (context) => AllNotifier(),
-                  child: MultiplyTheNumbers(),
-                ),
-                ChangeNotifierProvider(
-                  create: (context) => ConnectivityProvider(),
-                  child: HourlyBonusPage(),
-                ),
-                ChangeNotifierProvider(
-                  create: (context) => ConnectivityProvider(),
-                  child: WeeklyGiveAwayPage(),
-                ),
-                ChangeNotifierProvider(
-                  create: (context) => ConnectivityProvider(),
-                  child: HomePage(),
-                ),
-                StreamProvider(
-                    create: (BuildContext context) =>
-                        firestoreServices.getUserData(user.uid)),
-              ],
-              child: builder(context, snapshot),
-            );
-          }
-          return builder(context, snapshot);
-        });
+    return FutureBuilder(
+      // Initialize FlutterFire
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        return StreamBuilder<User>(
+            stream: authServices?.onAuthStateChanged,
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              if (user != null) {
+                return MultiProvider(
+                  providers: [
+                    Provider<User>.value(
+                      value: user,
+                    ),
+                    Provider<FirestoreServices>(
+                      create: (_) => FirestoreServices(),
+                    ),
+                    Provider<AllNotifier>(
+                      create: (_) => AllNotifier(),
+                    ),
+                    ChangeNotifierProvider<AllNotifier>(
+                      create: (context) => AllNotifier(),
+                      child: AddTheNumbers(),
+                    ),
+                    ChangeNotifierProvider<AllNotifier>(
+                      create: (context) => AllNotifier(),
+                      child: SignUpPage(),
+                    ),
+                    ChangeNotifierProvider<AllNotifier>(
+                      create: (context) => AllNotifier(),
+                      child: MultiplyTheNumbers(),
+                    ),
+                    ChangeNotifierProvider(
+                      create: (context) => ConnectivityProvider(),
+                      child: HourlyBonusPage(),
+                    ),
+                    ChangeNotifierProvider(
+                      create: (context) => ConnectivityProvider(),
+                      child: WeeklyGiveAwayPage(),
+                    ),
+                    ChangeNotifierProvider(
+                      create: (context) => ConnectivityProvider(),
+                      child: HomePage(),
+                    ),
+                    StreamProvider(
+                        create: (BuildContext context) =>
+                            firestoreServices.getUserData(user.uid)),
+                  ],
+                  child: builder(context, snapshot),
+                );
+              }
+              return builder(context, snapshot);
+            });
+      },
+    );
   }
 }

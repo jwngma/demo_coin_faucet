@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:democoin/models/users.dart';
 import 'package:democoin/provider_package/allNotifiers.dart';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/widgets/message_dialog_with_ok.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:democoin/screens/home_page.dart';
 import 'package:democoin/screens/no_internet.dart';
 import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/Constants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -26,17 +28,21 @@ class WeeklyGiveAwayPage extends StatefulWidget {
 
 class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
   var firestoreServices = FirestoreServices();
-
+  AdmobHelper admobHelper = new AdmobHelper();
   var today = "";
 
   @override
   void initState() {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-
+    MobileAds.instance.initialize();
+    admobHelper.createRewardAd();
   }
 
 
+  showRewardAds() {
+   admobHelper.showRewardAd();
+  }
   bool btnenabled = false;
   @override
   Widget build(BuildContext context) {
@@ -222,7 +228,7 @@ class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
                                   child: btnenabled
                                       ? ElevatedButton(
                                           onPressed: () async {
-
+                                            showRewardAds();
                                             ProgressDialog pr= ProgressDialog(context, isDismissible: true);
                                             pr.show();
                                             Timer(Duration(seconds: 5), () {
@@ -258,7 +264,6 @@ class _WeeklyGiveAwayPageState extends State<WeeklyGiveAwayPage> {
                             SizedBox(
                               height: 10,
                             ),
-
                           ],
                         ),
                       ),

@@ -19,15 +19,19 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   Stream stream;
   FirestoreServices fireStoreServices = FirestoreServices();
   bool showLoading = true;
+  //
 
   @override
   void initState() {
     getAnnouncements();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-
+    //
     super.initState();
   }
 
+  showInterstitialAds() {
+   //
+  }
 
   getAnnouncements() {
     fireStoreServices.getAnnouncements().then((val) {
@@ -52,6 +56,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));
@@ -83,7 +88,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                           physics:
                                               NeverScrollableScrollPhysics(),
                                           itemCount:
-                                              snapshots.data.documents.length,
+                                              snapshots.data.docs.length,
                                           shrinkWrap: true,
                                           reverse: true,
                                           itemBuilder: (context, index) {
@@ -94,12 +99,12 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                                 showNotificationDialog(
                                                     snapshots
                                                         .data
-                                                        .documents[index]
-                                                        .data["title"],
+                                                        .docs[index]
+                                                        ["title"],
                                                     snapshots
                                                         .data
-                                                        .documents[index]
-                                                        .data["message"]);
+                                                        .docs[index]
+                                                        ["message"]);
                                               },
                                               child: Card(
                                                 elevation: 1,
@@ -118,8 +123,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                                     title: AutoSizeText(
                                                       snapshots
                                                           .data
-                                                          .documents[index]
-                                                          .data["title"],
+                                                          .docs[index]
+                                                          ["title"],
                                                       maxLines: 2,
                                                       style: TextStyle(
                                                           fontSize: 18,
@@ -129,13 +134,13 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                                     subtitle: Text(
                                                       snapshots
                                                           .data
-                                                          .documents[index]
-                                                          .data["message"],
+                                                          .docs[index]
+                                                          ["message"],
                                                       style: TextStyle(
                                                           fontSize: 14),
                                                     ),
                                                     trailing: Text(
-                                                      "${DateFormat.yMd().format(DateTime.parse(snapshots.data.documents[index].data['time'].toString()))}",
+                                                      "${DateFormat.yMd().format(DateTime.parse(snapshots.data.docs[index]['time'].toString()))}",
                                                       style: TextStyle(
                                                           fontSize: 10),
                                                     ),

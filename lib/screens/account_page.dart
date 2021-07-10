@@ -3,10 +3,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:democoin/inapp_purchase/CoinStorePage.dart';
 import 'package:democoin/models/AccountData.dart';
 import 'package:democoin/models/users.dart';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/services/firestore_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -20,13 +22,19 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  AdmobHelper admobHelper = new AdmobHelper();
+
+  showInterstitialAds() {
+    admobHelper.showInterad();
+  }
 
 
 
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-
+    MobileAds.instance.initialize();
+    admobHelper.createInterad();
     super.initState();
   }
 
@@ -35,7 +43,7 @@ class _AccountScreenState extends State<AccountScreen> {
     var userData = Provider.of<Users>(context);
     return WillPopScope(
       onWillPop: () {
-
+        showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

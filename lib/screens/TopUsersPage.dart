@@ -1,3 +1,4 @@
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/services/firebase_auth_services.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'home_page.dart';
@@ -24,7 +26,11 @@ class _TopUsersPageState extends State<TopUsersPage> {
 
   bool _loadingProducts = true;
   List<DocumentSnapshot> _listUsers = [];
+  AdmobHelper admobHelper = new AdmobHelper();
 
+  showInterstitialAds() {
+admobHelper.showInterad();
+  }
 
   @override
   void initState() {
@@ -32,6 +38,8 @@ class _TopUsersPageState extends State<TopUsersPage> {
     super.initState();
     getCurrentUserId();
     getTop100Users();
+    MobileAds.instance.initialize();
+    admobHelper.createInterad();
   }
 
   getCurrentUserId() async {
@@ -59,6 +67,7 @@ class _TopUsersPageState extends State<TopUsersPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));
@@ -183,7 +192,7 @@ class _TopUsersPageState extends State<TopUsersPage> {
                                                       const EdgeInsets.only(
                                                           top: 5),
                                                   child: Text(
-                                                    "${(_listUsers[index].get("points") * Constants.decimal).toStringAsFixed(8)}" +
+                                                    "${(_listUsers[index].get("points") * Constants.decimal).toStringAsFixed(0)}" +
                                                         "  ${Constants.coin_name}",
                                                     style: TextStyle(
                                                         fontSize: 16,

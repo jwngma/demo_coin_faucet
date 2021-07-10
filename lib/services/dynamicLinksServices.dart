@@ -11,7 +11,7 @@ class DynamicServices {
     bool short,
   }) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-    final FirebaseUser user = await auth.currentUser();
+    final  user = await auth.currentUser;
     String _linkToShare = "";
 
     final DynamicLinkParameters dynamicLinkParameters = DynamicLinkParameters(

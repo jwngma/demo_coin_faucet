@@ -18,35 +18,39 @@ class Users {
   int sumTimer;
   int premiumTill;
   int freeCashTimer;
+  int nextClaim;
   int multiplyTimer;
   bool referredBy;
   String referralId;
   String activePlan;
+  String today;
 
   Users(
       {this.uid,
-      this.name,
-      this.country,
-      this.idToken,
-      this.count,
-      this.premiumTill,
-      this.watchVideoTimer,
-      this.freeCashTimer,
-      this.email,
-      this.points,
-      this.clicks,
-      this.clicks_left,
-      this.profile_photo,
-      this.claimed,
+        this.name,
+        this.country,
+        this.idToken,
+        this.count,
+        this.premiumTill,
+        this.watchVideoTimer,
+        this.freeCashTimer,
+        this.email,
+        this.points,
+        this.nextClaim,
+        this.clicks,
+        this.clicks_left,
+        this.profile_photo,
+        this.claimed,
         this.earnedByReferral,
-      this.createdOn,
-      this.lastLogin,
-      this.hourlyTimer,
-      this.sumTimer,
-      this.multiplyTimer,
-      this.referredBy,
-      this.referralId,
-      this.activePlan,
+        this.createdOn,
+        this.lastLogin,
+        this.hourlyTimer,
+        this.sumTimer,
+        this.multiplyTimer,
+        this.referredBy,
+        this.referralId,
+        this.activePlan,
+        this.today,
 
 
       });
@@ -61,6 +65,7 @@ class Users {
     data['freeCashTimer'] = users.freeCashTimer;
     data['count'] = users.count;
     data['idToken'] = users.idToken;
+    data['nextClaim'] = users.nextClaim;
     data['premiumTill'] = users.premiumTill;
     data['points'] = users.points;
     data['clicks'] = users.clicks;
@@ -76,6 +81,7 @@ class Users {
     data['referredBy'] = users.referredBy;
     data['referralId'] = users.referralId;
     data['activePlan'] = users.activePlan;
+    data['today'] = users.today;
 
     return data;
   }
@@ -87,6 +93,7 @@ class Users {
     this.email = mapData['email'];
     this.freeCashTimer = mapData['freeCashTimer'];
     this.idToken = mapData['idToken'];
+    this.nextClaim = mapData['nextClaim'];
     this.count = mapData['count'];
     this.premiumTill = mapData['premiumTill'];
     this.watchVideoTimer = mapData['watchVideoTimer'];
@@ -103,7 +110,7 @@ class Users {
     this.multiplyTimer = mapData['multiplyTimer'];
     this.referredBy = mapData['referredBy'];
     this.referralId = mapData['referralId'];
-
     this.activePlan = mapData['activePlan'];
+    this.today = mapData['today'];
   }
 }

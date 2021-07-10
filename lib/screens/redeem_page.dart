@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/firebase_auth_services.dart';
 import 'package:democoin/services/firestore_services.dart';
 import 'package:democoin/utils/tools.dart';
@@ -6,6 +7,7 @@ import 'package:democoin/wallet/transaction_page.dart';
 import 'package:democoin/wallet/withdraw_money_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class RedeemScreen extends StatefulWidget {
   static const String routeName = "/RedeemScreen";
@@ -21,6 +23,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
   @override
   void initState() {
     super.initState();
+
   }
 
   @override

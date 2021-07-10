@@ -1,8 +1,6 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdmobHelper {
-  static String get bannerUnit => 'ca-app-pub-3940256099942544/6300978111';
-
   RewardedAd _rewardedAd;
   InterstitialAd _interstitialAd;
 
@@ -17,7 +15,7 @@ class AdmobHelper {
   static BannerAd getBannerAd() {
     BannerAd bAd = new BannerAd(
         size: AdSize.fullBanner,
-        adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+        adUnitId: AdManager.bannerAdPlacementId,
         listener: BannerAdListener(onAdClosed: (Ad ad) {
           print("Ad Closed");
         }, onAdFailedToLoad: (Ad ad, LoadAdError error) {
@@ -35,7 +33,7 @@ class AdmobHelper {
   // create interstitial ads
   void createInterad() {
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/1033173712',
+      adUnitId: AdManager.interstitialVideoAdPlacementId,
       request: AdRequest(),
       adLoadCallback:
           InterstitialAdLoadCallback(onAdLoaded: (InterstitialAd ad) {
@@ -76,16 +74,12 @@ class AdmobHelper {
     _interstitialAd = null;
   }
 
-
-
-
   void createRewardAd() {
     RewardedAd.load(
-        adUnitId: 'ca-app-pub-3940256099942544/5224354917',
+        adUnitId: AdManager.rewardedVideoAdPlacementId,
         request: AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (RewardedAd ad) {
-
             print(" Reward Ads is Loaded ");
             print('$ad loaded.');
             // Keep a reference to the ad so you can show it later.
@@ -98,11 +92,15 @@ class AdmobHelper {
   }
 
   void showRewardAd() {
+
+    if(_rewardedAd==null){
+      createRewardAd();
+      return;
+    }
     _rewardedAd.show(
         onUserEarnedReward: (RewardedAd ad, RewardItem rewardItem) {
-          print("Adds Reward is ${rewardItem.amount}");
-
-        });
+      print("Adds Reward is ${rewardItem.amount}");
+    });
 
     _rewardedAd.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (RewardedAd ad) =>
@@ -117,16 +115,33 @@ class AdmobHelper {
       },
       onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
     );
-
-
-
-
   }
 }
 
+class AdManager {
+  static bool release = false;
 
+  static String get bannerAdPlacementId {
+    if (release) {
+      return 'ca-app-pub-3940256099942544/6300978111';
+    } else {
+      return 'ca-app-pub-3940256099942544/6300978111';
+    }
+  }
 
+  static String get interstitialVideoAdPlacementId {
+    if (release) {
+      return 'ca-app-pub-3940256099942544/1033173712';
+    } else {
+      return 'ca-app-pub-3940256099942544/1033173712';
+    }
+  }
 
-
-
-
+  static String get rewardedVideoAdPlacementId {
+    if (release) {
+      return 'ca-app-pub-3940256099942544/5224354917';
+    } else {
+      return 'ca-app-pub-3940256099942544/5224354917';
+    }
+  }
+}

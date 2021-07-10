@@ -123,7 +123,7 @@ class _ChatRoomsPageState extends State<ChatRoomsPage> {
                                               physics:
                                                   NeverScrollableScrollPhysics(),
                                               itemCount: snapshots
-                                                  .data.documents.length,
+                                                  .data.docs.length,
                                               shrinkWrap: true,
                                               reverse: true,
                                               itemBuilder: (context, index) {
@@ -133,20 +133,20 @@ class _ChatRoomsPageState extends State<ChatRoomsPage> {
                                                 Message message = Message(
                                                   message: snapshots
                                                       .data
-                                                      .documents[index]
-                                                      .data["message"],
+                                                      .docs[index]
+                                                      ["message"],
                                                   time: snapshots
                                                       .data
-                                                      .documents[index]
-                                                      .data["time"],
+                                                      .docs[index]
+                                                      ["time"],
                                                   name: snapshots
                                                       .data
-                                                      .documents[index]
-                                                      .data["name"],
+                                                      .docs[index]
+                                                      ["name"],
                                                   uid: snapshots
                                                       .data
-                                                      .documents[index]
-                                                      .data["uid"],
+                                                      .docs[index]
+                                                      ["uid"],
                                                 );
                                                 return Card(
                                                     elevation: 1,

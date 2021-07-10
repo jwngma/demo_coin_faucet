@@ -160,7 +160,7 @@ class _WithdrawMoneyState extends State<WithdrawMoney> {
                               child: Text(
                                 pointsToShow == null
                                     ? "0"
-                                    : "${(pointsToShow * Constants.decimal).toStringAsFixed(8)}",
+                                    : "${(pointsToShow * Constants.decimal).toStringAsFixed(0)}",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
                               ),
@@ -317,7 +317,7 @@ class _WithdrawMoneyState extends State<WithdrawMoney> {
                       int points = await _fireStoreServices.getPoints();
 
                       int clicks = await _fireStoreServices
-                          .getClicks(await authServices.getCurrentUser());
+                          .getClicks(await authServices.users);
 
                       if (withdrawalServices[selectedLocation] == false) {
                         return showToasts("Select Your Wallet Email First");
@@ -326,7 +326,7 @@ class _WithdrawMoneyState extends State<WithdrawMoney> {
                         return showToasts("Please Add Your Address First");
                       }
                       double pointToWithdraw = double.parse(
-                          (points * Constants.decimal).toStringAsFixed(8));
+                          (points * Constants.decimal).toStringAsFixed(0));
 
                       if (pointToWithdraw >= 50) {
                         pr.show();

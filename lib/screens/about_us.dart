@@ -17,15 +17,18 @@ class AboutUsScreen extends StatefulWidget {
 }
 
 class _AboutUsScreenState extends State<AboutUsScreen> {
-
+  //
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-
+    //
   }
 
+  showInterstitialAds() {
+    //
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +91,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
 
     return WillPopScope(
       onWillPop: () {
-
+       showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

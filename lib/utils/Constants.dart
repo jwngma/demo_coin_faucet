@@ -2,60 +2,47 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static List<String> withdrawalServices = [
-    "COINBASE",
-    "FAUCETPAY",
+    "Wallet",
   ];
 
   //Text required for app
   static const String app_name = "Demo Faucet";
-  static const String coin_name = "Demo";
+  static const String app_bar_title = "DemoFaucet";
+  static const String coin_name = "Demo Dogecoin";
   static const String symbol = "Demo";
+  static const String symbol_cl = "Demo ";
   static const String groupChatName = "DemoGroupChat";
   static const String claim_coin = "Claim Demo";
-  static const String release_version_code = "6";
-  static const String telegram_group_link =
-      "https://t.me/micro_dogecoin_faucet";
-
+  static const String release_version_code = "2";
   static const String pakageName = "com.jwngma.democoin";
   static const String email = "microfaucets@gmail.com";
   static const String app_owner_name = "Jwngma Basumatary";
-  static const String unity_ads_id = "4174667";
+  //static const String unity_ads_id = "4206439";
 
 
   //Intervals for next Claims
-  static const int claimTimer = 5;
-  static const int bonusTimer = 3;
+  static const int claimTimer = 10;
+  static const int bonusTimer = 8;
   static const int hourlyBonusTimer = 60;
 
-  //App InApp Setvices
-  static const String Basic = "Basic";
-  static const String Standard = "Standard";
-  static const String Premium = "Premium";
-  static const String isolated = "Isolated ";
-  static const String Ultra_Premium = "Ultra_premium";
+
 
   //rewards for premium users
-  static const int basic_reward = 1000000;
-  static const int standard_reward = 1500000;
-  static const int premium_reward = 2000000;
-  static const int ultraPremium_reward = 2500000;
-  static const int isolated_reward = 3000000;
-
+  static const int claim_reward = 100;
 
 
   //for dynamic link
   static const String firebase_dynamic_url = "https://democoin.page.link";
-  static const String app_website = "https://democoinapp.blogspot.com";
-  static const String app_logo_for_dynamiclink = "https://firebasestorage.googleapis.com/v0/b/dogecoin-faucet-ce9c1.appspot.com/o/app_logo.png?alt=media&token=0ca0ad94-1093-494d-9fa0-be89be0fb97c";
+  static const String telegram_group_link = "https://t.me/babydogecoin";
+  static const String app_website = "https://democoin.blogspot.com/";
+  static const String app_logo_for_dynamiclink = "https://firebasestorage.googleapis.com/v0/b/baby-dogecoin-faucet.appspot.com/o/21378476.jpg?alt=media&token=615ca99b-a495-4d5b-99f1-7ef14ad08bc2";
 
 
 
   //rewards per claim for basic users
-  static const int bonus_reward = 500000;
-  static const int referal_reward = 10;
-  static const int hourly_reward = 800000;
-  static const double decimal = 0.00000001;
-  static const int video_reward = 700000;
+  static const int bonus_reward = 75;
+  static const int referal_reward = 1000;
+  static const double decimal = 1;
 
 
   static OutlineInputBorder border = OutlineInputBorder(
@@ -85,7 +72,7 @@ class Constants {
 
 //Image
 
-  static const String app_logo = "assets/images/app_logo.png";
+  static const String app_logo = "assets/images/app_logo.jpg";
   static const String free_cash = "assets/images/coins.png";
   static const String weeklyIcon = "assets/images/weekly_icon.png";
   static const String ref_icon = "assets/images/refer_icon.png";
@@ -96,11 +83,11 @@ class Constants {
   static const app_link =
       'https://play.google.com/store/apps/details?id=${Constants.pakageName}';
   static const String desc_about_app =
-      '''${Constants.app_name} is a fun app for earning ${Constants.coin_name} .We have developed this application to let the users to earn cryptocurrency in a fun way. We are planning to add more fun games and events to earn more cryptocurrencies''';
+  '''${Constants.app_name} is a fun app for earning ${Constants.coin_name} .We have developed this application to let the users to earn cryptocurrency in a fun way. We are planning to add more fun games and events to earn more cryptocurrencies''';
 
   static const String contact_us = "Contact Us";
 
-  static const String withdraw_note = "Note- For Coinbase use only Coinbase Email address for withdrawal to Coinbase Account, If ${Constants.coin_name} address is used, you payment will be cancelled and is not refundable.";
+  static const String withdraw_note = "Note- Transaction Fee will be deducted same amount as Mxc Exchange , your payment will be transafered throught Mxc Exchange account. \n Transaction fee will be removed if Coinbase Supports Baby Doge";
   static const String approval_time = "You Will receive your payment within 72 hours";
   static const String notifications = "Notifications";
   static const String announcements = "Announcements";

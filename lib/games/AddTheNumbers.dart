@@ -2,19 +2,17 @@ import 'dart:async';
 import 'dart:math';
 import 'package:democoin/models/users.dart';
 import 'package:democoin/provider_package/allNotifiers.dart';
+import 'package:democoin/provider_package/connectivity_provider.dart';
+import 'package:democoin/screens/home_page.dart';
+import 'package:democoin/screens/no_internet.dart';
 import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/firebase_auth_services.dart';
-import 'package:democoin/utils/tools.dart';
+import 'package:democoin/services/firestore_services.dart';
+import 'package:democoin/utils/Constants.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:democoin/provider_package/connectivity_provider.dart';
-import 'package:democoin/screens/home_page.dart';
-import 'package:democoin/screens/no_internet.dart';
-import 'package:democoin/services/UnityAdsServices.dart';
-import 'package:democoin/services/firestore_services.dart';
-import 'package:democoin/utils/Constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info/package_info.dart';
@@ -34,24 +32,21 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
   FirestoreServices firestoreServices = FirestoreServices();
 
-  AdmobHelper admobHelper =
-  new AdmobHelper();
-
   TextEditingController _multipliedController = TextEditingController();
   FirebaseAuthServices authServices = FirebaseAuthServices();
   int addedNumber = 0;
   int enteredNumber = 0;
-  int guessedTimes = 0;
   int timerLeft = -1;
 
   bool clicked = false;
   bool updated = true;
+  AdmobHelper admobHelper = new AdmobHelper();
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-    admobHelper.createInterad();
+    MobileAds.instance.initialize();
     admobHelper.createRewardAd();
     checkIfTodaysLeftClick();
     try {
@@ -62,7 +57,13 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   }
 
   checkIfTodaysLeftClick() async {
-    getLastClickedTime();
+    var firestoreServices =
+        Provider.of<FirestoreServices>(context, listen: false);
+    today = await firestoreServices.getToday();
+
+    if (today == DateTime.now().day.toString()) {
+      getLastClickedTime();
+    }
 
     setState(() {});
   }
@@ -74,10 +75,6 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
   int currentTimeInSeconds() {
     var ms = new DateTime.now().millisecondsSinceEpoch;
     return (ms / 1000).round();
-  }
-
-  showInterstitialAds() {
-    admobHelper.showInterad();
   }
 
   showRewardAds() {
@@ -92,8 +89,10 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
 
     try {
-      await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-      await remoteConfig.activateFetched();
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+          fetchTimeout: Duration(seconds: 20),
+          minimumFetchInterval: Duration(seconds: 50)));
+      await remoteConfig.activate();
       remoteConfig.getString('force_update_current_version');
       double newVersion = double.parse(remoteConfig
           .getString('force_update_current_version')
@@ -110,7 +109,7 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
         });
         print("You are using the  Old Vesrion App");
       }
-    } on FetchThrottledException catch (exception) {
+    } on PlatformException catch (exception) {
       print(exception);
     } catch (exception) {
       print(
@@ -154,21 +153,20 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
     enteredNumber = int.parse(_multipliedController.text.toString());
     var firestoreServices =
         Provider.of<FirestoreServices>(context, listen: false);
-    var rewardDoge = Constants.bonus_reward;
+    var reward = Constants.bonus_reward;
 
     if (enteredNumber == addedNumber) {
       print("Correct");
       _multipliedController.clear();
       firestoreServices
-          .addPointsForAction(
-              rewardDoge, "sumTimer", 0, Constants.bonusTimer, 0)
+          .addPointsForAction(reward, "sumTimer", 0, Constants.bonusTimer, 0)
           .then((val) {
         setState(() {
           timerLeft = Constants.bonusTimer * 60;
           clicked = true;
         });
         showToastWithMessage(
-            "You have been  Reward ${(rewardDoge * Constants.decimal).toStringAsFixed(4)} ${Constants.symbol}");
+            "You have been  Reward ${(reward * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}");
       }).then((val) {
         generateRandomNunbersAndAddedNumber();
       });
@@ -407,7 +405,7 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                                   child: Consumer<AllNotifier>(
                                     builder: (_, data, child) {
                                       return Text(
-                                        "Balance: ${(userData.points * Constants.decimal).toStringAsFixed(8)} ${Constants.symbol}",
+                                        "Balance: ${(userData.points * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                         style: GoogleFonts.abhayaLibre(
                                             fontSize: 22,
                                             color: Colors.white,
@@ -511,13 +509,6 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                           SizedBox(
                             height: 10,
                           ),
-                          Container(
-                            child: AdWidget(
-                              ad: AdmobHelper.getBannerAd()..load(),
-                              key: UniqueKey(),
-                            ),
-                            height: 50,
-                          ),
                           SizedBox(
                             height: 10,
                           ),
@@ -533,10 +524,7 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                                   child: btnenabled
                                       ? ElevatedButton(
                                           onPressed: () {
-                                            print("Guest Count $guessedTimes");
-
                                             if (!updated) {
-                                              showInterstitialAds();
                                               return showToastWithMessage(
                                                   "Please Update The App To The Latest Version");
                                             }
@@ -547,12 +535,11 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                                                   "Enter the Sum Of Numbers");
                                             }
 
-                                            if(userData.clicks_left<=0){
-                                              return Tools.showToasts(
+                                            if (userData.clicks_left <= 0) {
+                                              return showToastWithMessage(
                                                   "You can Claim only 250 times aday");
                                             }
                                             showRewardAds();
-
                                             ProgressDialog pr = ProgressDialog(
                                                 context,
                                                 isDismissible: true);
@@ -589,7 +576,7 @@ class _AddTheNumbersState extends State<AddTheNumbers> {
                             height: 20,
                           ),
                           Text(
-                            "You will be rewarded upto ${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name} for the Correct Answer",
+                            "You will be rewarded upto ${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.coin_name} for the Correct Answer",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 10),
                           ),

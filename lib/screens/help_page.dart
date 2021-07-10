@@ -19,16 +19,18 @@ class _HelpPageState extends State<HelpPage> {
   TextEditingController _subController = TextEditingController();
 
   TextEditingController _messageController = TextEditingController();
-
+  //
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
-
+    //
   }
 
-
+  showInterstitialAds() {
+    //
+  }
 
   showToastt(String message) {
     Fluttertoast.showToast(
@@ -53,6 +55,7 @@ class _HelpPageState extends State<HelpPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        showInterstitialAds();
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
           return HomePage();
         }));

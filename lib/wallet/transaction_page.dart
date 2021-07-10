@@ -123,7 +123,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                           children: <Widget>[
                                             Text(
                                               //"Points- ${_listEvents[index].get("points")}",
-                                              "Points- ${(_listEvents[index].get("points")* Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
+                                              "Points- ${(_listEvents[index].get("points")* Constants.decimal).toStringAsFixed(0)} ${Constants.coin_name}",
                                               style: TextStyle(
                                                   fontSize: 14),
                                             ),

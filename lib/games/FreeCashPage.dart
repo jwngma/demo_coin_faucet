@@ -4,7 +4,6 @@ import 'package:democoin/services/AdmobHelper.dart';
 import 'package:democoin/services/UnityAdsServices.dart';
 import 'package:democoin/utils/tools.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:democoin/provider_package/connectivity_provider.dart';
 import 'package:democoin/screens/home_page.dart';
@@ -26,30 +25,28 @@ class FreeCashPage extends StatefulWidget {
 
 class _FreeCashPageState extends State<FreeCashPage> {
   var firestoreServices = FirestoreServices();
-  AdmobHelper admobHelper =
-  new AdmobHelper();
-
+  //
   var claimReward = Constants.bonus_reward;
   int timerLeft = -1;
   bool clicked = false;
+
+  RewardedAd _rewardedAd;
+  int _numRewardedLoadAttempts = 0;
+  AdmobHelper admobHelper = new AdmobHelper();
 
   @override
   void initState() {
     super.initState();
     Provider.of<ConnectivityProvider>(context, listen: false).startMonitoring();
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    admobHelper.createInterad();
+    MobileAds.instance.initialize();
     admobHelper.createRewardAd();
-  }
 
-
-  showInterstitialAds() {
-    admobHelper.showInterad();
   }
 
   showRewardAds() {
     admobHelper.showRewardAd();
   }
+
 
   int currentTimeInSeconds() {
     var ms = new DateTime.now().millisecondsSinceEpoch;
@@ -300,7 +297,7 @@ class _FreeCashPageState extends State<FreeCashPage> {
                                             horizontal: 5,
                                           ),
                                           child: Text(
-                                            "My Earning: ${(userData.points * Constants.decimal).toStringAsFixed(8)} ${Constants.symbol}",
+                                            "My Earning: ${(userData.points * Constants.decimal).toStringAsFixed(0)} ${Constants.symbol}",
                                             style: GoogleFonts.abhayaLibre(
                                                 fontSize: 22,
                                                 color: Colors.white,
@@ -329,7 +326,7 @@ class _FreeCashPageState extends State<FreeCashPage> {
                               height: 20,
                             ),
                             Text(
-                              "Congratulation! \nYou have Won ${(claimReward * Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
+                              "Congratulation! \nYou have Won ${(claimReward * Constants.decimal).toStringAsFixed(0)} ${Constants.coin_name}",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 22,
@@ -340,7 +337,7 @@ class _FreeCashPageState extends State<FreeCashPage> {
                               height: 30,
                             ),
                             Text(
-                              "* Open Free Cash Reward every 3 min and Win upto  ${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(8)} ${Constants.coin_name}",
+                              "* Open Free Cash Reward every 3 min and Win upto  ${(Constants.bonus_reward * Constants.decimal).toStringAsFixed(0)} ${Constants.coin_name}",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 15,
@@ -420,13 +417,6 @@ class _FreeCashPageState extends State<FreeCashPage> {
                             SizedBox(
                               height: 10,
                             ),
-                        Container(
-                          child: AdWidget(
-                            ad: AdmobHelper.getBannerAd()..load(),
-                            key: UniqueKey(),
-                          ),
-                          height: 50,
-                        ),
                             SizedBox(
                               height: 10,
                             ),
